@@ -1,0 +1,72 @@
+\documentclass[12pt]{article}
+% math fonts
+\usepackage{amsmath,amsfonts,amsthm,amssymb}
+% to change margins of the pages
+\usepackage[margin=0.9in]{geometry}
+
+% This generates a page header with your name in it.
+\setlength{\headheight}{15pt}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{$\sum \lfloor k\sqrt{2} \rfloor$}
+\rhead{By Anshul Vyakarnam}
+\rfoot{Page \thepage}
+
+% so the quotes look correct
+\usepackage [english]{babel}
+\usepackage [autostyle, english = american]{csquotes}
+\MakeOuterQuote{"}
+
+\newcommand{\floor}[1]{\left \lfloor #1 \right \rfloor}
+\newcommand{\ceil}[1]{\left \lceil #1 \right \rceil}
+
+\title{Sum of Beatty Sequence, alpha = sqrt(2)}
+
+
+\begin{document}
+\noindent
+\[ \sum_{k=1}^n \floor{k\sqrt{2}}\]
+The problem is a sum of a Beatty Sequence, which is a sequence with a positive, irrational $r$ of the form
+\[\floor{r}, \floor{2r}, \floor{3r}, ...\]
+Let $S(\alpha, n)$ be the sum of the first $n$ terms of a Beatty Sequence with $r = \alpha$ (in our case, we are concerned with $S(\sqrt{2}, n)$, but we'll get to that). There are a few simplifications based on $\alpha$:
+\\\\
+{\bf Case 0:} $\alpha = 1$\\
+Technically, this is not a Beatty Sequence, but I'm defining it here to simplify notation later. Obviously, with $\alpha = 1$ this is just a simple sum of consecutive integers, and so
+\[S(1, n) = \frac{n(n+1)}{2}\]
+\\
+{\bf Case 1:} $\alpha \geq 2$\\
+Let $\beta = \alpha - 1$. Then
+\begin{align*}
+    S(\alpha, n) &= \sum_{k=1}^n \floor{k\alpha}\\
+    &= \sum_{k=1}^n \floor{k(\beta  +1)}\\
+    &= \sum_{k=1}^n \floor{k\beta + k}\\
+    &= \sum_{k=1}^n \floor{k\beta} + \sum_{k=1}^n k\\
+    &= S(\beta, n) + S(1,n)
+\end{align*}
+\\
+{\bf Case 2:} $1 < \alpha < 2$\\
+There is a useful property about Beatty Sequences, known as Raleigh's Theorem. Given an irrational $r > 1$, if $s$ satisfies 
+\[r^{-1} + s^{-1} = 1\]
+then the Beatty Sequences of $r$ and of $s$ partition $\mathbb{N}$, that is  all positive integers are either in the $r$-sequence or the $s$-sequence. Thus define
+\[\beta = \frac{1}{1 - \alpha^{-1}}\]
+And $m = \floor{\alpha n}$, so that the $\beta$ sum ends at the same point as the $\alpha$ sum. Then
+\[S(\alpha, n) + S(\beta, \floor{m/\beta}) = S(1,m)\]
+Also, $\floor{m/\beta} = \floor{m \beta^{-1}} = \floor{m(1-\alpha^{-1})} = \floor{m - m/\alpha} = m - \ceil{m/\alpha} = m - n = \floor{(\alpha -1)n}$\\
+Thus
+\[S(\alpha, n) = S(1, \floor{\alpha n}) - S(\beta, \floor{(\alpha - 1)n})\]
+\\
+In the case where $\alpha = \sqrt{2}$, as $1 < \sqrt{2} < 2$, $\beta = 2 + \sqrt{2}$. The solution can thus be simplified as follows:
+\begin{align*}
+    S(\sqrt{2}, n) &= S(1, \floor{\sqrt{2}n}) - S(2 + \sqrt{2}, \floor{(\sqrt{2} - 1)n})\\
+    &= S(1, \floor{\sqrt{2}n}) - 2S(1, \floor{(\sqrt{2} - 1)n}) - S(\sqrt{2}, \floor{(\sqrt{2} - 1)n})
+\end{align*}
+\\\\
+{\bf Complexity Analysis}\\
+(Just for fun)\\
+At each level of recursion, there is 1 subproblem and an $O(1)$ additional computation. The size of the subproblem decreases by a factor of 
+\[b = \frac{1}{\sqrt{2} - 1} \approx 2.41421356 \]
+Thus the time complexity for each level of recursion is:
+\[T(n) = T\left(\frac{n}{2.41421356}\right) + O(1)\]
+By application of the master theorem, the overall time complexity is $O(\log n)$, a significant improvement over the $O(n)$ naive formula.
+\end{document}
